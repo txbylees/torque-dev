@@ -655,6 +655,164 @@ if(sEl) sObs.observe(sEl);
 
     </div>
 
+    <!-- Finance Calculator -->
+    <div class="rcard" style="margin-bottom:16px">
+      <div class="rcard-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="18" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg>
+        Finance Calculator
+        <span style="margin-left:auto;font-size:11px;font-weight:400;color:var(--muted);font-family:'Inter',sans-serif">6.6% APR representative</span>
+      </div>
+
+      <!-- Finance type toggle -->
+      <div class="fin-toggle">
+        <button class="fin-tab active" id="tab-pcp" onclick="setFinType('pcp')">PCP</button>
+        <button class="fin-tab" id="tab-hp" onclick="setFinType('hp')">HP</button>
+      </div>
+      <p class="fin-type-desc" id="fin-desc">PCP — lower monthly payments, optional balloon payment at the end. You don't own the car until the final payment is made.</p>
+
+      <!-- Inputs -->
+      <div class="fin-inputs">
+        <div class="fin-field">
+          <label>Vehicle price</label>
+          <div class="fin-input-wrap">
+            <span class="fin-prefix">£</span>
+            <input type="number" id="fin-price" value="25500" min="1000" max="200000" step="100">
+          </div>
+        </div>
+        <div class="fin-field">
+          <label>Deposit</label>
+          <div class="fin-input-wrap">
+            <span class="fin-prefix">£</span>
+            <input type="number" id="fin-deposit" value="3000" min="0" step="100">
+          </div>
+        </div>
+        <div class="fin-field">
+          <label>Term</label>
+          <div class="fin-input-wrap">
+            <select id="fin-term">
+              <option value="24">24 months</option>
+              <option value="36">36 months</option>
+              <option value="48" selected>48 months</option>
+              <option value="60">60 months</option>
+            </select>
+          </div>
+        </div>
+        <div class="fin-field" id="fin-balloon-field">
+          <label>Balloon (GFV) <span style="color:var(--muted);font-weight:400">optional</span></label>
+          <div class="fin-input-wrap">
+            <span class="fin-prefix">£</span>
+            <input type="number" id="fin-balloon" value="8000" min="0" step="100">
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="fin-result">
+        <div class="fin-result-main">
+          <div class="fin-result-label">Monthly payment</div>
+          <div class="fin-result-val" id="fin-monthly">£—</div>
+        </div>
+        <div class="fin-result-breakdown">
+          <div class="fin-stat"><div class="fin-stat-val" id="fin-total-cost">—</div><div class="fin-stat-label">Total cost</div></div>
+          <div class="fin-stat"><div class="fin-stat-val" id="fin-total-interest">—</div><div class="fin-stat-label">Total interest</div></div>
+          <div class="fin-stat"><div class="fin-stat-val" id="fin-amount-financed">—</div><div class="fin-stat-label">Amount financed</div></div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;font-size:11px;color:var(--muted);line-height:1.5">Representative 6.6% APR. For illustrative purposes only. Actual rates depend on your credit score and lender.</div>
+    </div>
+
+    <!-- MOT History -->
+    <div class="rcard" style="margin-bottom:16px">
+      <div class="rcard-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        MOT History
+        <span style="margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:400;color:var(--caution);font-family:'Inter',sans-serif">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Placeholder — DVSA API required
+        </span>
+      </div>
+
+      <div class="mot-timeline">
+        <div class="mot-item mot-pass">
+          <div class="mot-dot pass"></div>
+          <div class="mot-line"></div>
+          <div class="mot-content">
+            <div class="mot-header">
+              <span class="mot-badge pass">PASS</span>
+              <span class="mot-date">14 March 2025</span>
+              <span class="mot-mileage">38,240 miles</span>
+            </div>
+            <p class="mot-notes">No advisories recorded.</p>
+          </div>
+        </div>
+        <div class="mot-item mot-pass">
+          <div class="mot-dot pass"></div>
+          <div class="mot-line"></div>
+          <div class="mot-content">
+            <div class="mot-header">
+              <span class="mot-badge pass">PASS</span>
+              <span class="mot-date">2 April 2024</span>
+              <span class="mot-mileage">32,180 miles</span>
+            </div>
+            <p class="mot-notes">1 advisory: Tyre worn close to legal limit (nearside rear)</p>
+          </div>
+        </div>
+        <div class="mot-item mot-pass">
+          <div class="mot-dot pass"></div>
+          <div class="mot-line"></div>
+          <div class="mot-content">
+            <div class="mot-header">
+              <span class="mot-badge pass">PASS</span>
+              <span class="mot-date">18 March 2023</span>
+              <span class="mot-mileage">26,450 miles</span>
+            </div>
+            <p class="mot-notes">No advisories recorded.</p>
+          </div>
+        </div>
+        <div class="mot-item mot-fail">
+          <div class="mot-dot fail"></div>
+          <div class="mot-line"></div>
+          <div class="mot-content">
+            <div class="mot-header">
+              <span class="mot-badge fail">FAIL</span>
+              <span class="mot-date">3 March 2022</span>
+              <span class="mot-mileage">21,100 miles</span>
+            </div>
+            <p class="mot-notes">Fail: Brake fluid contaminated. Re-test passed same day.</p>
+          </div>
+        </div>
+        <div class="mot-item mot-pass">
+          <div class="mot-dot pass"></div>
+          <div class="mot-line"></div>
+          <div class="mot-content">
+            <div class="mot-header">
+              <span class="mot-badge pass">PASS</span>
+              <span class="mot-date">11 April 2021</span>
+              <span class="mot-mileage">15,820 miles</span>
+            </div>
+            <p class="mot-notes">No advisories recorded.</p>
+          </div>
+        </div>
+        <div class="mot-item mot-pass" style="--last:1">
+          <div class="mot-dot pass"></div>
+          <div class="mot-content">
+            <div class="mot-header">
+              <span class="mot-badge pass">PASS</span>
+              <span class="mot-date">22 May 2020</span>
+              <span class="mot-mileage">9,340 miles</span>
+            </div>
+            <p class="mot-notes">First MOT. No advisories.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:12px;background:rgba(200,137,58,0.06);border-radius:10px;border:1px solid rgba(200,137,58,0.2)">
+        <p style="font-size:12px;color:var(--caution);font-weight:500;margin-bottom:3px">⚠ Live data requires DVSA API</p>
+        <p style="font-size:12px;color:var(--muted);line-height:1.5">Real MOT history is available free via the DVSA API at <span style="color:var(--mint)">developer.mot-history.api.gov.uk</span> — no cost, just a free API key. Drop it in to replace this placeholder.</p>
+      </div>
+    </div>
+
       <!-- Price History Chart -->
       <div class="rcard" style="margin-bottom:16px">
         <div class="rcard-title">
@@ -744,6 +902,46 @@ if(sEl) sObs.observe(sEl);
 .listing-detail{font-size:12px;color:var(--muted)}
 .listing-price{font-family:'Poppins',sans-serif;font-weight:600;font-size:17px;color:var(--mint);text-align:right}
 .listing-source{font-size:11px;color:var(--muted);text-align:right;margin-top:2px}
+
+/* ── FINANCE CALCULATOR ── */
+.fin-toggle{display:flex;background:rgba(255,255,255,0.05);border-radius:100px;padding:3px;margin-bottom:12px;width:fit-content;border:1px solid var(--card-border)}
+.fin-tab{background:transparent;border:none;color:var(--muted);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:7px 20px;border-radius:100px;cursor:pointer;transition:background .2s,color .2s}
+.fin-tab.active{background:var(--em);color:#fff}
+.fin-type-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:20px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border-left:2px solid rgba(126,207,184,0.3)}
+.fin-inputs{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+.fin-field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:500}
+.fin-input-wrap{display:flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid var(--card-border);border-radius:10px;overflow:hidden;transition:border-color .2s}
+.fin-input-wrap:focus-within{border-color:rgba(126,207,184,0.4)}
+.fin-prefix{padding:0 10px;font-size:14px;color:var(--muted);background:rgba(255,255,255,0.03);border-right:1px solid var(--card-border);align-self:stretch;display:flex;align-items:center}
+.fin-input-wrap input,.fin-input-wrap select{flex:1;background:transparent;border:none;outline:none;padding:10px 12px;font-size:14px;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;width:100%}
+.fin-input-wrap select{cursor:pointer}
+.fin-input-wrap select option{background:#0D2019;color:var(--text)}
+.fin-result{background:linear-gradient(135deg,rgba(15,92,77,0.25),rgba(15,92,77,0.1));border:1px solid rgba(126,207,184,0.2);border-radius:14px;padding:20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.fin-result-main{text-align:center;min-width:140px}
+.fin-result-label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.fin-result-val{font-family:'Poppins',sans-serif;font-weight:600;font-size:36px;color:var(--mint)}
+.fin-result-breakdown{display:flex;flex:1;justify-content:space-around;border-left:1px solid rgba(126,207,184,0.15);padding-left:20px;flex-wrap:wrap;gap:12px}
+.fin-stat{text-align:center}
+.fin-stat-val{font-family:'Poppins',sans-serif;font-weight:500;font-size:16px;color:var(--text)}
+.fin-stat-label{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* ── MOT HISTORY ── */
+.mot-timeline{display:flex;flex-direction:column;padding-top:4px}
+.mot-item{display:flex;gap:14px;position:relative;padding-bottom:20px}
+.mot-item:last-child{padding-bottom:0}
+.mot-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;margin-top:3px;position:relative;z-index:1}
+.mot-dot.pass{background:var(--mint);box-shadow:0 0 8px rgba(126,207,184,0.4)}
+.mot-dot.fail{background:#B84040;box-shadow:0 0 8px rgba(184,64,64,0.4)}
+.mot-line{position:absolute;left:6px;top:17px;bottom:0;width:1.5px;background:rgba(255,255,255,0.07)}
+.mot-item:last-child .mot-line{display:none}
+.mot-content{flex:1;padding-bottom:4px}
+.mot-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:5px}
+.mot-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;letter-spacing:.05em}
+.mot-badge.pass{background:rgba(126,207,184,0.15);color:var(--mint)}
+.mot-badge.fail{background:rgba(184,64,64,0.15);color:#e06060}
+.mot-date{font-size:13px;font-weight:500;color:var(--text)}
+.mot-mileage{font-size:12px;color:var(--muted);margin-left:auto;font-family:monospace}
+.mot-notes{font-size:12px;color:var(--body);line-height:1.5}
 
 
 .reg-lookup{position:relative;z-index:1;width:100%;max-width:520px;margin:0 auto}
@@ -1003,6 +1201,70 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+
+  // ── FINANCE CALCULATOR ──
+  var finType = 'pcp';
+
+  function setFinType(type){
+    finType = type;
+    document.getElementById('tab-pcp').classList.toggle('active', type === 'pcp');
+    document.getElementById('tab-hp').classList.toggle('active', type === 'hp');
+    document.getElementById('fin-balloon-field').style.display = type === 'pcp' ? 'block' : 'none';
+    document.getElementById('fin-desc').textContent = type === 'pcp'
+      ? 'PCP — lower monthly payments, optional balloon payment at the end. You don\'t own the car until the final payment is made.'
+      : 'HP — fixed monthly payments, you own the car outright at the end of the term. No balloon payment, higher monthly cost.';
+    calcFinance();
+  }
+  window.setFinType = setFinType;
+
+  function calcFinance(){
+    var price    = parseFloat(document.getElementById('fin-price').value) || 0;
+    var deposit  = parseFloat(document.getElementById('fin-deposit').value) || 0;
+    var term     = parseInt(document.getElementById('fin-term').value) || 48;
+    var balloon  = finType === 'pcp' ? (parseFloat(document.getElementById('fin-balloon').value) || 0) : 0;
+    var apr      = 6.6;
+
+    var financed = price - deposit;
+    if(financed <= 0){ return; }
+
+    var monthlyRate = apr / 100 / 12;
+    var monthly, totalCost, totalInterest;
+
+    if(finType === 'hp'){
+      // Standard HP: flat amortisation
+      if(monthlyRate === 0){
+        monthly = financed / term;
+      } else {
+        monthly = financed * (monthlyRate * Math.pow(1 + monthlyRate, term)) / (Math.pow(1 + monthlyRate, term) - 1);
+      }
+      totalCost = deposit + (monthly * term);
+      totalInterest = totalCost - price;
+    } else {
+      // PCP: balloon deducted from principal, remaining amortised
+      var pv = financed - balloon / Math.pow(1 + monthlyRate, term);
+      if(monthlyRate === 0){
+        monthly = pv / term;
+      } else {
+        monthly = pv * (monthlyRate * Math.pow(1 + monthlyRate, term)) / (Math.pow(1 + monthlyRate, term) - 1);
+      }
+      totalCost = deposit + (monthly * term) + balloon;
+      totalInterest = totalCost - price;
+    }
+
+    document.getElementById('fin-monthly').textContent   = '£' + monthly.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    document.getElementById('fin-total-cost').textContent = '£' + totalCost.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    document.getElementById('fin-total-interest').textContent = '£' + totalInterest.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    document.getElementById('fin-amount-financed').textContent = '£' + financed.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  // Wire up finance inputs
+  ['fin-price','fin-deposit','fin-term','fin-balloon'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('input', calcFinance);
+  });
+
+  // Run on first show
+  setTimeout(calcFinance, 350);
 
   function closeResults(){
     document.getElementById('results-page').style.display = 'none';
