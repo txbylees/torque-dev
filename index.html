@@ -211,15 +211,18 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;justify
   </div>
   <h1>Understand the <em>true cost</em> of owning any car</h1>
   <p class="hero-sub">Torque breaks down every cost — finance, insurance, fuel, depreciation — so you always know exactly what you're committing to before you sign.</p>
-  <div class="hero-actions">
-    <a href="#waitlist" class="btn-primary">
-      Get early access
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </a>
-    <a href="#how" class="btn-ghost">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-      See how it works
-    </a>
+  <div class="reg-lookup">
+    <div class="reg-input-wrap">
+      <div class="reg-plate-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      </div>
+      <input type="text" id="reg-input" placeholder="Enter reg e.g. N12 KNL" maxlength="8" autocomplete="off" spellcheck="false">
+      <button class="reg-submit" onclick="lookupReg()">
+        Check car
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+    <p class="reg-hint">Try <span onclick="document.getElementById('reg-input').value='N12 KNL'" style="color:var(--mint);cursor:pointer;text-decoration:underline;text-underline-offset:3px">N12 KNL</span> to see a demo</p>
   </div>
   <div class="hero-stats">
     <div class="stat-item">
@@ -503,5 +506,349 @@ if(sEl) sObs.observe(sEl);
   draw();
 })();
 </script>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay" style="display:none">
+  <div class="loading-inner">
+    <div class="loading-logo">
+      <div class="loading-spinner"></div>
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(126,207,184,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    </div>
+    <p class="loading-reg" id="loading-reg-text">N12 KNL</p>
+    <div class="loading-steps">
+      <div class="lstep" id="ls1"><span class="lstep-dot"></span> Connecting to DVLA database</div>
+      <div class="lstep" id="ls2"><span class="lstep-dot"></span> Fetching vehicle details</div>
+      <div class="lstep" id="ls3"><span class="lstep-dot"></span> Calculating ownership costs</div>
+      <div class="lstep" id="ls4"><span class="lstep-dot"></span> Building your report</div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS PAGE -->
+<div id="results-page" style="display:none">
+  <div class="results-nav">
+    <button class="results-back" onclick="closeResults()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back
+    </button>
+    <div class="results-nav-logo">Torque<span>.</span></div>
+    <div class="results-reg-badge" id="results-reg-badge">N12 KNL</div>
+  </div>
+
+  <div class="results-content">
+
+    <!-- Hero car card -->
+    <div class="rcar-hero">
+      <div class="rcar-hero-left">
+        <div class="rcar-tag">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Vehicle found
+        </div>
+        <h1 class="rcar-name" id="r-name">BMW M2 Coupé</h1>
+        <p class="rcar-sub" id="r-sub">First Generation · F87 · 2016–2021</p>
+        <div class="rcar-badges">
+          <span class="rbadge rbadge-green" id="r-tax">Tax: Valid</span>
+          <span class="rbadge rbadge-green" id="r-mot">MOT: Valid</span>
+          <span class="rbadge" id="r-fuel">Petrol</span>
+        </div>
+      </div>
+      <div class="rcar-hero-right">
+        <div class="rcar-reg-plate" id="r-plate">N12 KNL</div>
+        <div class="rcar-colour-wrap">
+          <div class="rcar-colour-dot" id="r-colour-dot" style="background:#1a1a1a"></div>
+          <span id="r-colour">Colour: Black</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="rstats-row">
+      <div class="rstat"><div class="rstat-val" id="r-engine">3.0L I6</div><div class="rstat-label">Engine</div></div>
+      <div class="rstat"><div class="rstat-val" id="r-power">365 hp</div><div class="rstat-label">Power</div></div>
+      <div class="rstat"><div class="rstat-val" id="r-torque">465 Nm</div><div class="rstat-label">Torque</div></div>
+      <div class="rstat"><div class="rstat-val" id="r-0to60">4.5s</div><div class="rstat-label">0–100 km/h</div></div>
+      <div class="rstat"><div class="rstat-val" id="r-topspeed">250 km/h</div><div class="rstat-label">Top speed</div></div>
+      <div class="rstat"><div class="rstat-val" id="r-weight">1,550 kg</div><div class="rstat-label">Kerb weight</div></div>
+    </div>
+
+    <div class="results-grid">
+
+      <!-- Car details -->
+      <div class="rcard">
+        <div class="rcard-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Vehicle Details
+        </div>
+        <div class="rrow"><span>Make</span><span>BMW M</span></div>
+        <div class="rrow"><span>Model</span><span>M2 Coupé</span></div>
+        <div class="rrow"><span>Generation</span><span>F87 (First gen)</span></div>
+        <div class="rrow"><span>Body style</span><span>2-door Coupé</span></div>
+        <div class="rrow"><span>Drive</span><span>Rear-wheel drive</span></div>
+        <div class="rrow"><span>Layout</span><span>Front-engine, RWD</span></div>
+        <div class="rrow"><span>Transmission</span><span>6-speed manual / 7-speed DCT</span></div>
+        <div class="rrow"><span>Class</span><span>Subcompact executive / Sport compact</span></div>
+      </div>
+
+      <!-- Engine & Performance -->
+      <div class="rcard">
+        <div class="rcard-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Engine & Performance
+        </div>
+        <div class="rrow"><span>Engine</span><span>3.0L N55B30T0 Turbo I6</span></div>
+        <div class="rrow"><span>Power output</span><span>272 kW (365 hp) @ 6,500 rpm</span></div>
+        <div class="rrow"><span>Torque</span><span>465 Nm (343 lb-ft)</span></div>
+        <div class="rrow"><span>Overboost torque</span><span>500 Nm (369 lb-ft)</span></div>
+        <div class="rrow"><span>0–100 km/h (manual)</span><span>4.5 seconds</span></div>
+        <div class="rrow"><span>0–100 km/h (DCT)</span><span>4.3 seconds</span></div>
+        <div class="rrow"><span>Top speed</span><span>250 km/h (155 mph)</span></div>
+        <div class="rrow"><span>Top speed (M Driver's pkg)</span><span>270 km/h (168 mph)</span></div>
+      </div>
+
+      <!-- Road tax & running costs -->
+      <div class="rcard">
+        <div class="rcard-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Estimated Running Costs
+        </div>
+        <div class="rrow"><span>Road tax (VED)</span><span class="rval-accent">~£620 / yr</span></div>
+        <div class="rrow"><span>Fuel (10k miles/yr)</span><span class="rval-accent">~£2,400 / yr</span></div>
+        <div class="rrow"><span>Insurance (est.)</span><span class="rval-accent">~£1,800 / yr</span></div>
+        <div class="rrow"><span>Servicing</span><span class="rval-accent">~£800 / yr</span></div>
+        <div class="rrow"><span>Tyres</span><span class="rval-accent">~£600 / yr</span></div>
+        <div class="rrow total-row"><span>Est. total / yr</span><span class="rval-mint">~£6,220</span></div>
+      </div>
+
+      <!-- Depreciation -->
+      <div class="rcard">
+        <div class="rcard-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+          Depreciation Forecast
+        </div>
+        <div class="dep-bar-wrap">
+          <div class="dep-item">
+            <div class="dep-label">Now</div>
+            <div class="dep-bar"><div class="dep-fill" style="width:100%"></div></div>
+            <div class="dep-val">£28,500</div>
+          </div>
+          <div class="dep-item">
+            <div class="dep-label">1 yr</div>
+            <div class="dep-bar"><div class="dep-fill" style="width:82%"></div></div>
+            <div class="dep-val">£23,400</div>
+          </div>
+          <div class="dep-item">
+            <div class="dep-label">3 yr</div>
+            <div class="dep-bar"><div class="dep-fill" style="width:62%"></div></div>
+            <div class="dep-val">£17,600</div>
+          </div>
+          <div class="dep-item">
+            <div class="dep-label">5 yr</div>
+            <div class="dep-bar"><div class="dep-fill" style="width:46%"></div></div>
+            <div class="dep-val">£13,100</div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-top:16px">Based on average M2 depreciation rates. Estimates only.</p>
+      </div>
+
+    </div>
+
+    <div class="results-disclaimer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Demo data based on BMW M2 First Generation (F87). Running costs and depreciation are estimates only. Full live data available with DVLA API integration.
+    </div>
+
+  </div>
+</div>
+
+<style>
+/* ── REG LOOKUP ── */
+.reg-lookup{position:relative;z-index:1;width:100%;max-width:520px;margin:0 auto}
+.reg-input-wrap{display:flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(126,207,184,0.25);border-radius:100px;padding:6px 6px 6px 20px;gap:12px;transition:border-color .2s,box-shadow .2s;backdrop-filter:blur(10px)}
+.reg-input-wrap:focus-within{border-color:rgba(126,207,184,0.5);box-shadow:0 0 0 4px rgba(126,207,184,0.08)}
+.reg-plate-icon{color:var(--mint);opacity:0.7;display:flex;align-items:center;flex-shrink:0}
+#reg-input{flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:17px;font-weight:500;color:var(--text);letter-spacing:.05em;text-transform:uppercase}
+#reg-input::placeholder{color:var(--muted);text-transform:none;font-weight:400;letter-spacing:0;font-size:15px}
+.reg-submit{display:inline-flex;align-items:center;gap:8px;background:var(--em);color:#fff;padding:12px 22px;border-radius:100px;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:background .2s,transform .15s;white-space:nowrap;flex-shrink:0}
+.reg-submit:hover{background:#0a4238;transform:scale(1.02)}
+.reg-hint{text-align:center;font-size:13px;color:var(--muted);margin-top:14px}
+
+/* ── LOADING OVERLAY ── */
+#loading-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,26,18,0.97);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center}
+.loading-inner{text-align:center;padding:40px}
+.loading-logo{position:relative;width:72px;height:72px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center}
+.loading-spinner{position:absolute;inset:0;border:2px solid rgba(126,207,184,0.15);border-top:2px solid var(--mint);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-reg{font-family:'Poppins',sans-serif;font-size:28px;font-weight:600;color:var(--text);letter-spacing:.08em;margin-bottom:32px}
+.loading-steps{display:flex;flex-direction:column;gap:14px;text-align:left;max-width:280px;margin:0 auto}
+.lstep{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--muted);transition:color .3s}
+.lstep.active{color:var(--text)}
+.lstep.done{color:var(--mint)}
+.lstep-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.1);flex-shrink:0;transition:background .3s}
+.lstep.active .lstep-dot{background:var(--mint);box-shadow:0 0 8px var(--mint);animation:pulseDot 1s ease-in-out infinite}
+.lstep.done .lstep-dot{background:var(--mint)}
+@keyframes pulseDot{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
+
+/* ── RESULTS PAGE ── */
+#results-page{position:fixed;inset:0;z-index:400;background:var(--bg);overflow-y:auto}
+.results-nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(10,26,18,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.results-back{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:100px;font-size:14px;font-weight:500;cursor:pointer;transition:background .2s;font-family:'Inter',sans-serif}
+.results-back:hover{background:rgba(255,255,255,0.1)}
+.results-nav-logo{font-family:'Poppins',sans-serif;font-style:italic;font-weight:600;font-size:20px;color:var(--mint)}
+.results-reg-badge{background:rgba(126,207,184,0.1);border:1px solid rgba(126,207,184,0.25);color:var(--mint);padding:6px 16px;border-radius:100px;font-size:13px;font-weight:600;letter-spacing:.06em}
+.results-content{max-width:1000px;margin:0 auto;padding:40px 24px 80px}
+
+/* car hero */
+.rcar-hero{display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(135deg,rgba(15,92,77,0.3) 0%,rgba(15,92,77,0.1) 100%);border:1px solid rgba(126,207,184,0.2);border-radius:24px;padding:36px;margin-bottom:24px}
+.rcar-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(126,207,184,0.15);color:var(--mint);font-size:11px;font-weight:600;padding:4px 12px;border-radius:100px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
+.rcar-name{font-family:'Poppins',sans-serif;font-size:clamp(24px,4vw,40px);font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-.02em}
+.rcar-sub{font-size:14px;color:var(--body);margin-bottom:20px}
+.rcar-badges{display:flex;gap:8px;flex-wrap:wrap}
+.rbadge{display:inline-block;background:rgba(255,255,255,0.08);color:var(--body);border:1px solid var(--border);font-size:12px;font-weight:500;padding:4px 12px;border-radius:100px}
+.rbadge-green{background:rgba(126,207,184,0.12);color:var(--mint);border-color:rgba(126,207,184,0.25)}
+.rcar-reg-plate{background:#F5C518;color:#1a1a1a;font-family:'Poppins',sans-serif;font-weight:700;font-size:22px;padding:10px 24px;border-radius:8px;letter-spacing:.1em;margin-bottom:12px;text-align:center;border:2px solid #c9a200;box-shadow:0 4px 20px rgba(245,197,24,0.2)}
+.rcar-colour-wrap{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--body);justify-content:center}
+.rcar-colour-dot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(255,255,255,0.2)}
+
+/* stats row */
+.rstats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.rstat{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:16px;text-align:center}
+.rstat-val{font-family:'Poppins',sans-serif;font-weight:600;font-size:18px;color:var(--text);margin-bottom:4px}
+.rstat-label{font-size:11px;color:var(--muted)}
+
+/* results grid */
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.rcard{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:24px}
+.rcard-title{display:flex;align-items:center;gap:8px;font-family:'Poppins',sans-serif;font-weight:500;font-size:15px;color:var(--text);margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.rcard-title svg{color:var(--mint)}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px}
+.rrow:last-child{border-bottom:none}
+.rrow span:first-child{color:var(--body)}
+.rrow span:last-child{color:var(--text);font-weight:500;text-align:right;max-width:55%}
+.rval-accent{color:#C8893A !important}
+.rval-mint{color:var(--mint) !important;font-size:15px !important;font-weight:600 !important}
+.total-row{padding-top:14px !important;margin-top:4px;border-top:1px solid rgba(126,207,184,0.15) !important;border-bottom:none !important}
+.total-row span:first-child{font-weight:500;color:var(--text) !important}
+
+/* depreciation */
+.dep-bar-wrap{display:flex;flex-direction:column;gap:12px}
+.dep-item{display:flex;align-items:center;gap:12px}
+.dep-label{font-size:12px;color:var(--muted);width:28px;flex-shrink:0}
+.dep-bar{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:100px;overflow:hidden}
+.dep-fill{height:100%;background:linear-gradient(90deg,var(--mint),var(--sage));border-radius:100px;transition:width 1s ease}
+.dep-val{font-size:13px;font-weight:500;color:var(--text);font-family:monospace;width:56px;text-align:right;flex-shrink:0}
+
+.results-disclaimer{display:flex;align-items:flex-start;gap:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:16px 20px;font-size:12px;color:var(--muted);line-height:1.6}
+.results-disclaimer svg{color:var(--mint);flex-shrink:0;margin-top:1px}
+
+/* slide in animation */
+@keyframes slideInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.results-content>*{animation:slideInUp .5s ease forwards;opacity:0}
+.results-content>*:nth-child(1){animation-delay:.05s}
+.results-content>*:nth-child(2){animation-delay:.12s}
+.results-content>*:nth-child(3){animation-delay:.18s}
+.results-content>*:nth-child(4){animation-delay:.24s}
+
+@media(max-width:768px){
+  .rcar-hero{flex-direction:column;gap:24px}
+  .rstats-row{grid-template-columns:repeat(3,1fr)}
+  .results-grid{grid-template-columns:1fr}
+  .results-nav{padding:0 16px}
+  .results-content{padding:24px 16px 60px}
+}
+@media(max-width:480px){
+  .rstats-row{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+
+<script>
+window.lookupReg = function(){
+  const raw = document.getElementById('reg-input').value.trim().toUpperCase().replace(/\s/g,'');
+  if(!raw){ document.getElementById('reg-input').focus(); return; }
+
+  // show loading
+  const overlay = document.getElementById('loading-overlay');
+  document.getElementById('loading-reg-text').textContent = raw.replace(/(.{4})(.+)/, '$1 $2').trim() || raw;
+  overlay.style.display = 'flex';
+
+  // animate loading steps
+  const steps = ['ls1','ls2','ls3','ls4'];
+  steps.forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('active','done');
+  });
+
+  let i = 0;
+  function nextStep(){
+    if(i > 0){
+      document.getElementById(steps[i-1]).classList.remove('active');
+      document.getElementById(steps[i-1]).classList.add('done');
+    }
+    if(i < steps.length){
+      document.getElementById(steps[i]).classList.add('active');
+      i++;
+      setTimeout(nextStep, 700 + Math.random()*400);
+    } else {
+      // all done — show results
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        showResults(raw);
+      }, 500);
+    }
+  }
+  setTimeout(nextStep, 300);
+}
+
+window.showResults = function(reg){
+  const page = document.getElementById('results-page');
+
+  // For demo: N12KNL shows BMW M2 data. Any other reg shows generic data.
+  const isDemo = reg.replace(/\s/g,'').toUpperCase() === 'N12KNL';
+
+  const formatted = reg.length <= 4 ? reg : reg.slice(0,4) + ' ' + reg.slice(4);
+
+  document.getElementById('results-reg-badge').textContent = formatted;
+  document.getElementById('r-plate').textContent = formatted;
+
+  if(isDemo){
+    document.getElementById('r-name').textContent = 'BMW M2 Coupé';
+    document.getElementById('r-sub').textContent = 'First Generation · F87 · 2016–2021';
+    document.getElementById('r-tax').textContent = 'Tax: Valid';
+    document.getElementById('r-mot').textContent = 'MOT: Valid';
+    document.getElementById('r-fuel').textContent = 'Petrol';
+    document.getElementById('r-engine').textContent = '3.0L I6';
+    document.getElementById('r-power').textContent = '365 hp';
+    document.getElementById('r-torque').textContent = '465 Nm';
+    document.getElementById('r-0to60').textContent = '4.5s';
+    document.getElementById('r-topspeed').textContent = '250 km/h';
+    document.getElementById('r-weight').textContent = '1,550 kg';
+    document.getElementById('r-colour-dot').style.background = '#1a1a1a';
+    document.getElementById('r-colour').textContent = 'Colour: Black';
+  } else {
+    document.getElementById('r-name').textContent = 'Vehicle Found';
+    document.getElementById('r-sub').textContent = 'Registration: ' + formatted;
+    document.getElementById('r-fuel').textContent = 'Unknown fuel';
+    document.getElementById('r-engine').textContent = '—';
+    document.getElementById('r-power').textContent = '—';
+    document.getElementById('r-torque').textContent = '—';
+    document.getElementById('r-0to60').textContent = '—';
+    document.getElementById('r-topspeed').textContent = '—';
+    document.getElementById('r-weight').textContent = '—';
+    document.getElementById('r-colour').textContent = 'Colour: Unknown';
+  }
+
+  page.style.display = 'block';
+  page.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+
+window.closeResults = function(){
+  document.getElementById('results-page').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// allow Enter key on input
+document.getElementById('reg-input').addEventListener('keydown', e => {
+  if(e.key === 'Enter') lookupReg();
+});
 </body>
 </html>
