@@ -959,6 +959,70 @@ if(sEl) sObs.observe(sEl);
       </div>
     </div>
 
+    <!-- Write-off & Category Check -->
+    <div class="rcard" style="margin-bottom:16px">
+      <div class="rcard-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        Write-off & Insurance Category Check
+        <span style="margin-left:auto;font-size:10px;color:var(--muted);font-family:'Inter',sans-serif;font-weight:400">Powered by HPI — placeholder</span>
+      </div>
+
+      <!-- Clear result banner -->
+      <div class="writeoff-clear">
+        <div class="writeoff-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div>
+          <div class="writeoff-title">No write-off recorded</div>
+          <div class="writeoff-sub">This vehicle has no insurance write-off category on record.</div>
+        </div>
+      </div>
+
+      <!-- Category explainer -->
+      <div class="cat-grid">
+        <div class="cat-item clear">
+          <div class="cat-badge">✓</div>
+          <div class="cat-info">
+            <div class="cat-label">This vehicle</div>
+            <div class="cat-desc">No category recorded</div>
+          </div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-badge catn">N</div>
+          <div class="cat-info">
+            <div class="cat-label">Category N</div>
+            <div class="cat-desc">Non-structural damage — can be repaired and returned to road</div>
+          </div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-badge cats">S</div>
+          <div class="cat-info">
+            <div class="cat-label">Category S</div>
+            <div class="cat-desc">Structural damage — requires specialist repair before returning to road</div>
+          </div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-badge catb">B</div>
+          <div class="cat-info">
+            <div class="cat-label">Category B</div>
+            <div class="cat-desc">Broken for parts only — body must be crushed, should never return to road</div>
+          </div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-badge cata">A</div>
+          <div class="cat-info">
+            <div class="cat-label">Category A</div>
+            <div class="cat-desc">Scrap only — entire vehicle must be crushed, no parts may be reused</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;padding:12px;background:rgba(200,137,58,0.06);border-radius:10px;border:1px solid rgba(200,137,58,0.2)">
+        <p style="font-size:12px;color:var(--caution);font-weight:500;margin-bottom:3px">⚠ Live data requires HPI API</p>
+        <p style="font-size:12px;color:var(--muted);line-height:1.5">Real write-off history is available via the <span style="color:var(--mint)">HPI Check API</span> or <span style="color:var(--mint)">Experian AutoCheck</span>. Both charge per lookup — this is a natural monetisation point for Torque.</p>
+      </div>
+    </div>
+
       <!-- Price History Chart -->
       <div class="rcard" style="margin-bottom:16px">
         <div class="rcard-title">
@@ -1069,7 +1133,7 @@ if(sEl) sObs.observe(sEl);
 .fin-input-wrap input,.fin-input-wrap select{flex:1;background:transparent;border:none;outline:none;padding:10px 12px;font-size:14px;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;width:100%}
 .fin-input-wrap select{cursor:pointer}
 .fin-input-wrap select option{background:#0D2019;color:var(--text)}
-.fin-result{background:linear-gradient(135deg,rgba(15,92,77,0.25),rgba(15,92,77,0.1));border:1px solid rgba(126,207,184,0.2);border-radius:14px;padding:20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.fin-result{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px;display:flex;gap:20px;align-items:center;flex-wrap:wrap}
 .fin-result-main{text-align:center;min-width:140px}
 .fin-result-label{font-size:12px;color:var(--muted);margin-bottom:4px}
 .fin-result-val{font-family:'Poppins',sans-serif;font-weight:600;font-size:36px;color:var(--mint)}
@@ -1078,8 +1142,24 @@ if(sEl) sObs.observe(sEl);
 .fin-stat-val{font-family:'Poppins',sans-serif;font-weight:500;font-size:16px;color:var(--text)}
 .fin-stat-label{font-size:11px;color:var(--muted);margin-top:3px}
 
+/* ── WRITE-OFF CHECK ── */
+.writeoff-clear{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(126,207,184,0.12),rgba(126,207,184,0.05));border:1px solid rgba(126,207,184,0.25);border-radius:14px;padding:20px;margin-bottom:20px}
+.writeoff-icon{width:52px;height:52px;background:rgba(126,207,184,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--mint);flex-shrink:0}
+.writeoff-title{font-family:'Poppins',sans-serif;font-weight:600;font-size:18px;color:var(--mint);margin-bottom:3px}
+.writeoff-sub{font-size:13px;color:var(--body)}
+.cat-grid{display:flex;flex-direction:column;gap:8px}
+.cat-item{display:flex;align-items:center;gap:14px;padding:10px 14px;background:rgba(255,255,255,0.02);border:1px solid var(--card-border);border-radius:10px}
+.cat-item.clear{border-color:rgba(126,207,184,0.2);background:rgba(126,207,184,0.04)}
+.cat-badge{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;flex-shrink:0;background:rgba(126,207,184,0.15);color:var(--mint)}
+.cat-badge.catn{background:rgba(200,137,58,0.12);color:var(--caution)}
+.cat-badge.cats{background:rgba(220,100,30,0.12);color:#dc641e}
+.cat-badge.catb{background:rgba(184,64,64,0.15);color:#e06060}
+.cat-badge.cata{background:rgba(184,64,64,0.25);color:#ff4444}
+.cat-label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.cat-desc{font-size:12px;color:var(--muted);line-height:1.4}
+
 /* ── FUEL CALCULATOR ── */
-.fuel-result{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;background:linear-gradient(135deg,rgba(15,92,77,0.2),rgba(15,92,77,0.08));border:1px solid rgba(126,207,184,0.2);border-radius:14px;padding:20px;gap:0}
+.fuel-result{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:20px;gap:0}
 .fuel-stat{text-align:center;padding:0 12px}
 .fuel-val{font-family:'Poppins',sans-serif;font-weight:600;font-size:22px;color:var(--text)}
 .fuel-val.accent{color:var(--mint)}
@@ -1162,16 +1242,17 @@ if(sEl) sObs.observe(sEl);
 @keyframes pulseDot{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
 
 /* ── RESULTS PAGE ── */
-#results-page{position:fixed;inset:0;z-index:400;background:var(--bg);overflow-y:auto}
-.results-nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(10,26,18,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
-.results-back{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:100px;font-size:14px;font-weight:500;cursor:pointer;transition:background .2s;font-family:'Inter',sans-serif}
+#results-page{position:fixed;inset:0;z-index:400;background:#0E0F0E;overflow-y:auto}
+#results-page::before{content:'';position:fixed;top:-100px;left:50%;transform:translateX(-50%);width:900px;height:500px;background:radial-gradient(ellipse,rgba(255,255,255,0.04) 0%,rgba(15,92,77,0.05) 45%,transparent 70%);pointer-events:none;z-index:0}
+.results-nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(14,15,14,0.92);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.08)}
+.results-back{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:8px 16px;border-radius:100px;font-size:14px;font-weight:500;cursor:pointer;transition:background .2s;font-family:'Inter',sans-serif}
 .results-back:hover{background:rgba(255,255,255,0.1)}
 .results-nav-logo{font-family:'Poppins',sans-serif;font-style:italic;font-weight:600;font-size:20px;color:var(--mint)}
 .results-reg-badge{background:rgba(126,207,184,0.1);border:1px solid rgba(126,207,184,0.25);color:var(--mint);padding:6px 16px;border-radius:100px;font-size:13px;font-weight:600;letter-spacing:.06em}
-.results-content{max-width:1000px;margin:0 auto;padding:40px 24px 80px}
+.results-content{max-width:1000px;margin:0 auto;padding:40px 24px 80px;position:relative;z-index:1}
 
 /* car hero */
-.rcar-hero{display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(135deg,rgba(15,92,77,0.3) 0%,rgba(15,92,77,0.1) 100%);border:1px solid rgba(126,207,184,0.2);border-radius:24px;padding:36px;margin-bottom:24px}
+.rcar-hero{display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,rgba(255,255,255,0.02) 100%);border:1px solid rgba(255,255,255,0.1);border-radius:24px;padding:36px;margin-bottom:24px}
 .rcar-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(126,207,184,0.15);color:var(--mint);font-size:11px;font-weight:600;padding:4px 12px;border-radius:100px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:16px}
 .rcar-name{font-family:'Poppins',sans-serif;font-size:clamp(24px,4vw,40px);font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:-.02em}
 .rcar-sub{font-size:14px;color:var(--body);margin-bottom:20px}
@@ -1184,14 +1265,14 @@ if(sEl) sObs.observe(sEl);
 
 /* stats row */
 .rstats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
-.rstat{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:16px;text-align:center}
+.rstat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;text-align:center}
 .rstat-val{font-family:'Poppins',sans-serif;font-weight:600;font-size:18px;color:var(--text);margin-bottom:4px}
 .rstat-label{font-size:11px;color:var(--muted)}
 
 /* results grid */
 .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
-.rcard{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:24px}
-.rcard-title{display:flex;align-items:center;gap:8px;font-family:'Poppins',sans-serif;font-weight:500;font-size:15px;color:var(--text);margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.rcard{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:24px}
+.rcard-title{display:flex;align-items:center;gap:8px;font-family:'Poppins',sans-serif;font-weight:500;font-size:15px;color:var(--text);margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.07)}
 .rcard-title svg{color:var(--mint)}
 .rrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px}
 .rrow:last-child{border-bottom:none}
