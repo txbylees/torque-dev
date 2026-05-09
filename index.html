@@ -184,11 +184,6 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;justify
   .section{padding:48px 16px}
   .breakdown-section{padding:48px 16px}
   .hero-eyebrow{font-size:11px;padding:5px 12px}
-  /* reg input — stack button below on very small screens */
-  .reg-input-wrap{flex-wrap:wrap;border-radius:16px;padding:12px 16px;gap:10px}
-  .reg-plate-icon{display:none}
-  #reg-input{font-size:16px;min-width:0;width:100%}
-  .reg-submit{width:100%;justify-content:center;border-radius:12px;padding:12px}
   /* hero stats — single column */
   .hero-stats{flex-direction:column;align-items:stretch;gap:0;padding:16px}
   .stat-item{padding:12px 0;border-bottom:1px solid var(--border)}
@@ -437,11 +432,20 @@ if(sEl) sObs.observe(sEl);
 
 // ── SMOKE BACKGROUND ──
 (function(){
+  var isMobile = window.innerWidth <= 768;
+  if(isMobile){
+    // disable canvas entirely on mobile — kills perf
+    var c = document.getElementById('bg-canvas');
+    if(c) c.style.display = 'none';
+    return;
+  }
+
   const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
   let W, H, puffs = [];
-
-  const COUNT = 18;
+  const COUNT = 8; // reduced from 18
+  var lastFrame = 0;
+  var FPS_INTERVAL = 1000 / 28; // ~28fps instead of 60
 
   function resize(){
     W = canvas.width = window.innerWidth;
@@ -450,46 +454,39 @@ if(sEl) sObs.observe(sEl);
 
   function rand(min, max){ return Math.random() * (max - min) + min; }
 
-  function Puff(){
-    this.reset(true);
-  }
+  function Puff(){ this.reset(true); }
 
   Puff.prototype.reset = function(scatter){
     this.x = rand(0, W);
     this.y = scatter ? rand(0, H) : rand(H * 0.3, H + 200);
-    this.r = rand(120, 320);
-    this.vx = rand(-0.12, 0.12);
-    this.vy = rand(-0.25, -0.08);
+    this.r = rand(140, 300);
+    this.vx = rand(-0.1, 0.1);
+    this.vy = rand(-0.2, -0.06);
     this.alpha = 0;
-    this.targetAlpha = rand(0.04, 0.11);
-    this.fadeSpeed = rand(0.0008, 0.002);
+    this.targetAlpha = rand(0.04, 0.09);
+    this.fadeSpeed = rand(0.0006, 0.0015);
     this.growing = true;
-    this.growSpeed = rand(0.15, 0.4);
+    this.growSpeed = rand(0.12, 0.3);
     this.angle = rand(0, Math.PI * 2);
-    this.angleSpeed = rand(-0.0003, 0.0003);
-    this.scaleX = rand(0.8, 1.6);
-    // colour: mostly deep emerald, occasional mint
+    this.angleSpeed = rand(-0.0002, 0.0002);
+    this.scaleX = rand(0.8, 1.5);
     const roll = Math.random();
-    if(roll < 0.5)       this.hue = '15,92,77';
-    else if(roll < 0.8)  this.hue = '79,124,107';
-    else                 this.hue = '126,207,184';
+    if(roll < 0.5) this.hue = '15,92,77';
+    else if(roll < 0.8) this.hue = '79,124,107';
+    else this.hue = '126,207,184';
   };
 
   Puff.prototype.update = function(){
-    this.x += this.vx;
-    this.y += this.vy;
+    this.x += this.vx; this.y += this.vy;
     this.angle += this.angleSpeed;
     this.r += this.growSpeed;
-
     if(this.growing){
       this.alpha += this.fadeSpeed;
       if(this.alpha >= this.targetAlpha){ this.alpha = this.targetAlpha; this.growing = false; }
     } else {
       this.alpha -= this.fadeSpeed * 0.5;
     }
-
-    // recycle when faded out or drifted off screen
-    if(this.alpha <= 0 || this.y < -this.r * 2 || this.x < -this.r * 2 || this.x > W + this.r * 2){
+    if(this.alpha <= 0 || this.y < -this.r*2 || this.x < -this.r*2 || this.x > W+this.r*2){
       this.reset(false);
     }
   };
@@ -499,34 +496,36 @@ if(sEl) sObs.observe(sEl);
     ctx.translate(this.x, this.y);
     ctx.rotate(this.angle);
     ctx.scale(this.scaleX, 1);
-
-    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, this.r);
-    g.addColorStop(0,   `rgba(${this.hue},${this.alpha})`);
-    g.addColorStop(0.4, `rgba(${this.hue},${this.alpha * 0.6})`);
-    g.addColorStop(1,   `rgba(${this.hue},0)`);
-
+    const g = ctx.createRadialGradient(0,0,0,0,0,this.r);
+    g.addColorStop(0, `rgba(${this.hue},${this.alpha})`);
+    g.addColorStop(0.4, `rgba(${this.hue},${this.alpha*0.6})`);
+    g.addColorStop(1, `rgba(${this.hue},0)`);
     ctx.beginPath();
-    ctx.arc(0, 0, this.r, 0, Math.PI * 2);
+    ctx.arc(0, 0, this.r, 0, Math.PI*2);
     ctx.fillStyle = g;
     ctx.fill();
     ctx.restore();
   };
 
-  function init(){
-    resize();
-    puffs = [];
-    for(let i = 0; i < COUNT; i++) puffs.push(new Puff());
-  }
+  function init(){ resize(); puffs = []; for(let i=0;i<COUNT;i++) puffs.push(new Puff()); }
 
-  function draw(){
-    ctx.clearRect(0, 0, W, H);
-    puffs.forEach(p => { p.update(); p.draw(); });
+  function draw(ts){
     requestAnimationFrame(draw);
+    if(ts - lastFrame < FPS_INTERVAL) return; // throttle fps
+    lastFrame = ts;
+    ctx.clearRect(0,0,W,H);
+    puffs.forEach(p => { p.update(); p.draw(); });
   }
 
-  window.addEventListener('resize', () => { resize(); });
+  window.addEventListener('resize', () => {
+    isMobile = window.innerWidth <= 768;
+    if(isMobile){ canvas.style.display='none'; return; }
+    canvas.style.display='block';
+    resize();
+  });
+
   init();
-  draw();
+  requestAnimationFrame(draw);
 })();
 </script>
 
@@ -978,11 +977,18 @@ if(sEl) sObs.observe(sEl);
 .reg-input-wrap{display:flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(126,207,184,0.25);border-radius:100px;padding:6px 6px 6px 20px;gap:12px;transition:border-color .2s,box-shadow .2s;backdrop-filter:blur(10px)}
 .reg-input-wrap:focus-within{border-color:rgba(126,207,184,0.5);box-shadow:0 0 0 4px rgba(126,207,184,0.08)}
 .reg-plate-icon{color:var(--mint);opacity:0.7;display:flex;align-items:center;flex-shrink:0}
-#reg-input{flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:17px;font-weight:500;color:var(--text);letter-spacing:.05em;text-transform:uppercase}
+#reg-input{flex:1;background:transparent;border:none;outline:none;font-family:'Inter',sans-serif;font-size:17px;font-weight:500;color:var(--text);letter-spacing:.05em;text-transform:uppercase;min-width:0}
 #reg-input::placeholder{color:var(--muted);text-transform:none;font-weight:400;letter-spacing:0;font-size:15px}
 .reg-submit{display:inline-flex;align-items:center;gap:8px;background:var(--em);color:#fff;padding:12px 22px;border-radius:100px;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;border:none;cursor:pointer;transition:background .2s,transform .15s;white-space:nowrap;flex-shrink:0}
 .reg-submit:hover{background:#0a4238;transform:scale(1.02)}
 .reg-hint{text-align:center;font-size:13px;color:var(--muted);margin-top:14px}
+
+@media(max-width:600px){
+  .reg-input-wrap{border-radius:14px;padding:4px 4px 4px 16px;gap:8px}
+  .reg-plate-icon{display:none}
+  #reg-input{font-size:16px;padding:10px 0}
+  .reg-submit{border-radius:10px;padding:12px 18px;font-size:13px}
+}
 
 /* ── LOADING OVERLAY ── */
 #loading-overlay{position:fixed;inset:0;z-index:500;background:rgba(10,26,18,0.97);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center}
