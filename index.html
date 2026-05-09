@@ -835,6 +835,130 @@ if(sEl) sObs.observe(sEl);
       </div>
     </div>
 
+    <!-- Fuel Cost Calculator -->
+    <div class="rcard" style="margin-bottom:16px">
+      <div class="rcard-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V8l9-6 9 6v14"/><path d="M9 22V12h6v10"/><path d="M3 8h18"/></svg>
+        Fuel Cost Calculator
+      </div>
+      <div class="fin-inputs">
+        <div class="fin-field">
+          <label>Daily commute (miles)</label>
+          <div class="fin-input-wrap">
+            <input type="number" id="fuel-commute" value="30" min="1" max="500">
+          </div>
+        </div>
+        <div class="fin-field">
+          <label>Working days / year</label>
+          <div class="fin-input-wrap">
+            <input type="number" id="fuel-days" value="235" min="1" max="365">
+          </div>
+        </div>
+        <div class="fin-field">
+          <label>Extra miles / year</label>
+          <div class="fin-input-wrap">
+            <input type="number" id="fuel-extra" value="2000" min="0">
+          </div>
+        </div>
+        <div class="fin-field">
+          <label>Fuel price (p/litre)</label>
+          <div class="fin-input-wrap">
+            <span class="fin-prefix">p</span>
+            <input type="number" id="fuel-price" value="148" min="80" max="300">
+          </div>
+        </div>
+      </div>
+      <div class="fuel-result">
+        <div class="fuel-stat">
+          <div class="fuel-val" id="fuel-total-miles">—</div>
+          <div class="fuel-label">Total miles / yr</div>
+        </div>
+        <div class="fuel-divider"></div>
+        <div class="fuel-stat">
+          <div class="fuel-val" id="fuel-monthly">—</div>
+          <div class="fuel-label">Monthly fuel cost</div>
+        </div>
+        <div class="fuel-divider"></div>
+        <div class="fuel-stat">
+          <div class="fuel-val accent" id="fuel-annual">—</div>
+          <div class="fuel-label">Annual fuel cost</div>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:12px">Based on BMW M2 N55 real-world average of ~22 mpg. Adjust fuel price to match your local pump price.</p>
+    </div>
+
+    <!-- Known Issues -->
+    <div class="rcard" style="margin-bottom:16px">
+      <div class="rcard-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Known Issues — BMW M2 F87 (N55)
+        <span style="margin-left:auto;background:rgba(200,137,58,0.12);color:var(--caution);font-size:11px;font-weight:500;padding:2px 10px;border-radius:100px;font-family:'Inter',sans-serif">6 issues</span>
+      </div>
+
+      <div class="issue-list">
+
+        <div class="issue-item high">
+          <div class="issue-header">
+            <span class="issue-severity high">High</span>
+            <span class="issue-name">Charge pipe cracking</span>
+            <span class="issue-cost">£80–£200</span>
+          </div>
+          <p class="issue-desc">The OEM plastic charge pipe is known to split under boost pressure, causing sudden loss of power and limp mode. Very common on N55 M2s — an upgraded silicone pipe is a recommended preventive fix.</p>
+        </div>
+
+        <div class="issue-item medium">
+          <div class="issue-header">
+            <span class="issue-severity medium">Medium</span>
+            <span class="issue-name">Oil leaks — valve cover & oil filter housing gaskets</span>
+            <span class="issue-cost">£300–£600</span>
+          </div>
+          <p class="issue-desc">Rubber gaskets harden from heat cycling and begin leaking — typically from the valve cover and oil filter housing. Oil can reach the exhaust, creating a fire risk. Both are usually done together to save on labour.</p>
+        </div>
+
+        <div class="issue-item medium">
+          <div class="issue-header">
+            <span class="issue-severity medium">Medium</span>
+            <span class="issue-name">Electric water pump failure</span>
+            <span class="issue-cost">£400–£700</span>
+          </div>
+          <p class="issue-desc">The electric water pump can fail without warning, causing rapid overheating. Unlike a mechanical pump, there's no gradual warning — it simply stops. Most common between 60k–100k miles. Replace proactively if near that range.</p>
+        </div>
+
+        <div class="issue-item medium">
+          <div class="issue-header">
+            <span class="issue-severity medium">Medium</span>
+            <span class="issue-name">HPFP failure (high-pressure fuel pump)</span>
+            <span class="issue-cost">£500–£900</span>
+          </div>
+          <p class="issue-desc">High-pressure fuel pump failures have been reported on high-mileage or previously tuned N55 engines, leading to rough running, misfires, and hard starts. Check for any history of tuning before buying.</p>
+        </div>
+
+        <div class="issue-item low">
+          <div class="issue-header">
+            <span class="issue-severity low">Low</span>
+            <span class="issue-name">Ignition coil misfires</span>
+            <span class="issue-cost">£30–£120</span>
+          </div>
+          <p class="issue-desc">Failing ignition coils cause misfires, rough idle, and loss of power. Relatively cheap and easy to fix — usually resolved by replacing the affected coil(s). A full set replacement is often recommended at high mileage.</p>
+        </div>
+
+        <div class="issue-item low">
+          <div class="issue-header">
+            <span class="issue-severity low">Low</span>
+            <span class="issue-name">VANOS solenoid fault</span>
+            <span class="issue-cost">£150–£350</span>
+          </div>
+          <p class="issue-desc">VANOS (variable valve timing) solenoid failures can cause rough idle, hesitation, and loss of low-end power. Often triggers a fault code before becoming a major issue — check for any stored codes before purchasing.</p>
+        </div>
+
+      </div>
+
+      <div style="margin-top:16px;padding:12px;background:rgba(126,207,184,0.06);border-radius:10px;border:1px solid rgba(126,207,184,0.1)">
+        <p style="font-size:12px;color:var(--mint);font-weight:500;margin-bottom:3px">✓ Overall verdict</p>
+        <p style="font-size:12px;color:var(--muted);line-height:1.5">The N55-powered M2 is the most reliable F87 variant. When properly maintained and kept near stock, it's genuinely dependable. The charge pipe and water pump are the two proactive fixes worth doing regardless of mileage.</p>
+      </div>
+    </div>
+
       <!-- Price History Chart -->
       <div class="rcard" style="margin-bottom:16px">
         <div class="rcard-title">
@@ -953,6 +1077,37 @@ if(sEl) sObs.observe(sEl);
 .fin-stat{text-align:center}
 .fin-stat-val{font-family:'Poppins',sans-serif;font-weight:500;font-size:16px;color:var(--text)}
 .fin-stat-label{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* ── FUEL CALCULATOR ── */
+.fuel-result{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;background:linear-gradient(135deg,rgba(15,92,77,0.2),rgba(15,92,77,0.08));border:1px solid rgba(126,207,184,0.2);border-radius:14px;padding:20px;gap:0}
+.fuel-stat{text-align:center;padding:0 12px}
+.fuel-val{font-family:'Poppins',sans-serif;font-weight:600;font-size:22px;color:var(--text)}
+.fuel-val.accent{color:var(--mint)}
+.fuel-label{font-size:11px;color:var(--muted);margin-top:4px}
+.fuel-divider{width:1px;height:40px;background:rgba(126,207,184,0.15);flex-shrink:0}
+
+/* ── KNOWN ISSUES ── */
+.issue-list{display:flex;flex-direction:column;gap:10px}
+.issue-item{background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:12px;padding:14px 16px;transition:border-color .2s}
+.issue-item.high{border-left:3px solid #B84040}
+.issue-item.medium{border-left:3px solid var(--caution)}
+.issue-item.low{border-left:3px solid var(--sage)}
+.issue-header{display:flex;align-items:center;gap:10px;margin-bottom:7px;flex-wrap:wrap}
+.issue-severity{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;letter-spacing:.05em;flex-shrink:0}
+.issue-severity.high{background:rgba(184,64,64,0.15);color:#e06060}
+.issue-severity.medium{background:rgba(200,137,58,0.15);color:var(--caution)}
+.issue-severity.low{background:rgba(79,124,107,0.2);color:#7ECFB8}
+.issue-name{font-size:13px;font-weight:500;color:var(--text);flex:1}
+.issue-cost{font-size:12px;font-family:monospace;color:var(--muted);margin-left:auto;white-space:nowrap}
+.issue-desc{font-size:12px;color:var(--body);line-height:1.6}
+
+@media(max-width:600px){
+  .fuel-result{grid-template-columns:1fr;gap:12px}
+  .fuel-divider{display:none}
+  .fuel-stat{padding:8px 0;border-bottom:1px solid rgba(126,207,184,0.1)}
+  .fuel-stat:last-child{border-bottom:none}
+  .issue-cost{display:none}
+}
 
 /* ── MOT HISTORY ── */
 .mot-timeline{display:flex;flex-direction:column;padding-top:4px}
@@ -1271,6 +1426,31 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+
+  // ── FUEL CALCULATOR ──
+  function calcFuel(){
+    var commute  = parseFloat(document.getElementById('fuel-commute').value) || 0;
+    var days     = parseFloat(document.getElementById('fuel-days').value) || 0;
+    var extra    = parseFloat(document.getElementById('fuel-extra').value) || 0;
+    var pPlitre  = parseFloat(document.getElementById('fuel-price').value) || 148;
+    var mpg      = 22; // M2 N55 real-world average
+
+    var totalMiles   = (commute * days) + extra;
+    var litres       = totalMiles / mpg * 4.546; // miles to litres
+    var annualCost   = litres * (pPlitre / 100);
+    var monthlyCost  = annualCost / 12;
+
+    document.getElementById('fuel-total-miles').textContent = Math.round(totalMiles).toLocaleString() + ' mi';
+    document.getElementById('fuel-monthly').textContent     = '£' + monthlyCost.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',') + '/mo';
+    document.getElementById('fuel-annual').textContent      = '£' + annualCost.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',') + '/yr';
+  }
+
+  ['fuel-commute','fuel-days','fuel-extra','fuel-price'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('input', calcFuel);
+  });
+
+  setTimeout(calcFuel, 400);
 
   // ── FINANCE CALCULATOR ──
   var finType = 'pcp';
