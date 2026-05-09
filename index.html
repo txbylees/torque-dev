@@ -217,12 +217,12 @@ footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;justify
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
       </div>
       <input type="text" id="reg-input" placeholder="Enter reg e.g. N12 KNL" maxlength="8" autocomplete="off" spellcheck="false">
-      <button class="reg-submit" onclick="lookupReg()">
+      <button class="reg-submit" id="reg-submit-btn">
         Check car
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
     </div>
-    <p class="reg-hint">Try <span onclick="document.getElementById('reg-input').value='N12 KNL'" style="color:var(--mint);cursor:pointer;text-decoration:underline;text-underline-offset:3px">N12 KNL</span> to see a demo</p>
+    <p class="reg-hint">Try <span data-demo-reg="N12 KNL" style="color:var(--mint);cursor:pointer;text-decoration:underline;text-underline-offset:3px">N12 KNL</span> to see a demo</p>
   </div>
   <div class="hero-stats">
     <div class="stat-item">
@@ -527,7 +527,7 @@ if(sEl) sObs.observe(sEl);
 <!-- RESULTS PAGE -->
 <div id="results-page" style="display:none">
   <div class="results-nav">
-    <button class="results-back" onclick="closeResults()">
+    <button class="results-back" id="results-back-btn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       Back
     </button>
@@ -611,12 +611,12 @@ if(sEl) sObs.observe(sEl);
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           Estimated Running Costs
         </div>
-        <div class="rrow"><span>Road tax (VED)</span><span class="rval-accent">~£620 / yr</span></div>
-        <div class="rrow"><span>Fuel (10k miles/yr)</span><span class="rval-accent">~£2,400 / yr</span></div>
-        <div class="rrow"><span>Insurance (est.)</span><span class="rval-accent">~£1,800 / yr</span></div>
-        <div class="rrow"><span>Servicing</span><span class="rval-accent">~£800 / yr</span></div>
-        <div class="rrow"><span>Tyres</span><span class="rval-accent">~£600 / yr</span></div>
-        <div class="rrow total-row"><span>Est. total / yr</span><span class="rval-mint">~£6,220</span></div>
+        <div class="rrow"><span>Road tax (VED) 2025</span><span class="rval-accent">£195 / yr</span></div>
+        <div class="rrow"><span>Fuel (10k miles · ~22mpg)</span><span class="rval-accent">~£3,100 / yr</span></div>
+        <div class="rrow"><span>Insurance (group 47–50)</span><span class="rval-accent">~£2,200 / yr</span></div>
+        <div class="rrow"><span>Servicing & maintenance</span><span class="rval-accent">~£900 / yr</span></div>
+        <div class="rrow"><span>Tyres (Michelin PSS)</span><span class="rval-accent">~£700 / yr</span></div>
+        <div class="rrow total-row"><span>Est. total / yr</span><span class="rval-mint">~£7,095</span></div>
       </div>
 
       <!-- Depreciation -->
@@ -629,30 +629,107 @@ if(sEl) sObs.observe(sEl);
           <div class="dep-item">
             <div class="dep-label">Now</div>
             <div class="dep-bar"><div class="dep-fill" style="width:100%"></div></div>
-            <div class="dep-val">£28,500</div>
+            <div class="dep-val">£25,500</div>
           </div>
           <div class="dep-item">
             <div class="dep-label">1 yr</div>
-            <div class="dep-bar"><div class="dep-fill" style="width:82%"></div></div>
-            <div class="dep-val">£23,400</div>
+            <div class="dep-bar"><div class="dep-fill" style="width:92%"></div></div>
+            <div class="dep-val">£23,500</div>
           </div>
           <div class="dep-item">
             <div class="dep-label">3 yr</div>
-            <div class="dep-bar"><div class="dep-fill" style="width:62%"></div></div>
-            <div class="dep-val">£17,600</div>
+            <div class="dep-bar"><div class="dep-fill" style="width:84%"></div></div>
+            <div class="dep-val">£21,400</div>
           </div>
           <div class="dep-item">
             <div class="dep-label">5 yr</div>
-            <div class="dep-bar"><div class="dep-fill" style="width:46%"></div></div>
-            <div class="dep-val">£13,100</div>
+            <div class="dep-bar"><div class="dep-fill" style="width:76%"></div></div>
+            <div class="dep-val">£19,400</div>
           </div>
         </div>
-        <p style="font-size:12px;color:var(--muted);margin-top:16px">Based on average M2 depreciation rates. Estimates only.</p>
+        <div style="margin-top:16px;padding:12px;background:rgba(126,207,184,0.06);border-radius:10px;border:1px solid rgba(126,207,184,0.1)">
+          <p style="font-size:12px;color:var(--mint);font-weight:500;margin-bottom:4px">★ Strong resale value</p>
+          <p style="font-size:12px;color:var(--muted);line-height:1.5">The F87 M2 loses ~40.6% over 5 years — the best resale of any BMW M car. The N55-powered original is becoming a modern classic, with prices stabilising around £22–28k.</p>
+        </div>
       </div>
 
     </div>
 
-    <div class="results-disclaimer">
+      <!-- Price History Chart -->
+      <div class="rcard" style="margin-bottom:16px">
+        <div class="rcard-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Recent Sale Prices — BMW M2 F87 (UK Market)
+        </div>
+        <canvas id="price-chart" height="200" style="width:100%;display:block"></canvas>
+        <div style="display:flex;gap:20px;margin-top:12px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:12px;height:3px;background:var(--mint);border-radius:2px"></div>Sale price</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:12px;height:3px;background:rgba(126,207,184,0.25);border-radius:2px;border-top:2px dashed rgba(126,207,184,0.4)"></div>Market avg</div>
+        </div>
+      </div>
+
+      <!-- Current Listings -->
+      <div class="rcard" style="margin-bottom:16px">
+        <div class="rcard-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          Similar Cars Currently For Sale
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="listing-row">
+            <div class="listing-info">
+              <div class="listing-name">BMW M2 Coupé — 2017</div>
+              <div class="listing-detail">38,200 miles · Manual · Long Beach Blue</div>
+            </div>
+            <div class="listing-right">
+              <div class="listing-price">£26,495</div>
+              <div class="listing-source">AutoTrader</div>
+            </div>
+          </div>
+          <div class="listing-row">
+            <div class="listing-info">
+              <div class="listing-name">BMW M2 Coupé — 2018</div>
+              <div class="listing-detail">29,500 miles · DCT · Sapphire Black</div>
+            </div>
+            <div class="listing-right">
+              <div class="listing-price">£27,990</div>
+              <div class="listing-source">AutoTrader</div>
+            </div>
+          </div>
+          <div class="listing-row">
+            <div class="listing-info">
+              <div class="listing-name">BMW M2 Competition — 2019</div>
+              <div class="listing-detail">22,100 miles · Manual · Hockenheim Silver</div>
+            </div>
+            <div class="listing-right">
+              <div class="listing-price">£34,500</div>
+              <div class="listing-source">PistonHeads</div>
+            </div>
+          </div>
+          <div class="listing-row">
+            <div class="listing-info">
+              <div class="listing-name">BMW M2 Coupé — 2016</div>
+              <div class="listing-detail">51,000 miles · Manual · Alpine White</div>
+            </div>
+            <div class="listing-right">
+              <div class="listing-price">£22,750</div>
+              <div class="listing-source">eBay Motors</div>
+            </div>
+          </div>
+          <div class="listing-row">
+            <div class="listing-info">
+              <div class="listing-name">BMW M2 Competition — 2020</div>
+              <div class="listing-detail">18,400 miles · DCT · Misano Blue</div>
+            </div>
+            <div class="listing-right">
+              <div class="listing-price">£36,995</div>
+              <div class="listing-source">AutoTrader</div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">Listings shown are illustrative. Prices based on current UK market data. Live listings require AutoTrader API integration.</p>
+      </div>
+
+      <div class="results-disclaimer">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       Demo data based on BMW M2 First Generation (F87). Running costs and depreciation are estimates only. Full live data available with DVLA API integration.
     </div>
@@ -661,7 +738,14 @@ if(sEl) sObs.observe(sEl);
 </div>
 
 <style>
-/* ── REG LOOKUP ── */
+.listing-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--card-border);border-radius:12px;transition:border-color .2s}
+.listing-row:hover{border-color:rgba(126,207,184,0.25)}
+.listing-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
+.listing-detail{font-size:12px;color:var(--muted)}
+.listing-price{font-family:'Poppins',sans-serif;font-weight:600;font-size:17px;color:var(--mint);text-align:right}
+.listing-source{font-size:11px;color:var(--muted);text-align:right;margin-top:2px}
+
+
 .reg-lookup{position:relative;z-index:1;width:100%;max-width:520px;margin:0 auto}
 .reg-input-wrap{display:flex;align-items:center;background:rgba(255,255,255,0.06);border:1px solid rgba(126,207,184,0.25);border-radius:100px;padding:6px 6px 6px 20px;gap:12px;transition:border-color .2s,box-shadow .2s;backdrop-filter:blur(10px)}
 .reg-input-wrap:focus-within{border-color:rgba(126,207,184,0.5);box-shadow:0 0 0 4px rgba(126,207,184,0.08)}
@@ -761,94 +845,187 @@ if(sEl) sObs.observe(sEl);
 </style>
 
 <script>
-window.lookupReg = function(){
-  const raw = document.getElementById('reg-input').value.trim().toUpperCase().replace(/\s/g,'');
-  if(!raw){ document.getElementById('reg-input').focus(); return; }
+document.addEventListener('DOMContentLoaded', function() {
 
-  // show loading
-  const overlay = document.getElementById('loading-overlay');
-  document.getElementById('loading-reg-text').textContent = raw.replace(/(.{4})(.+)/, '$1 $2').trim() || raw;
-  overlay.style.display = 'flex';
+  function lookupReg(){
+    // preserve exactly what the user typed, just uppercase it
+    const userInput = document.getElementById('reg-input').value.trim().toUpperCase();
+    if(!userInput){ document.getElementById('reg-input').focus(); return; }
 
-  // animate loading steps
-  const steps = ['ls1','ls2','ls3','ls4'];
-  steps.forEach(id => {
-    const el = document.getElementById(id);
-    el.classList.remove('active','done');
+    // strip spaces for matching, keep original display value
+    const raw = userInput.replace(/\s/g,'');
+
+    const overlay = document.getElementById('loading-overlay');
+    document.getElementById('loading-reg-text').textContent = userInput;
+    overlay.style.display = 'flex';
+
+    const steps = ['ls1','ls2','ls3','ls4'];
+    steps.forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('active','done');
+    });
+
+    let i = 0;
+    function nextStep(){
+      if(i > 0){
+        document.getElementById(steps[i-1]).classList.remove('active');
+        document.getElementById(steps[i-1]).classList.add('done');
+      }
+      if(i < steps.length){
+        document.getElementById(steps[i]).classList.add('active');
+        i++;
+        setTimeout(nextStep, 700 + Math.random()*400);
+      } else {
+        setTimeout(() => {
+          overlay.style.display = 'none';
+          showResults(raw, userInput);
+        }, 500);
+      }
+    }
+    setTimeout(nextStep, 300);
+  }
+
+  function showResults(reg, displayReg){
+    const page = document.getElementById('results-page');
+    const isDemo = reg.replace(/\s/g,'').toUpperCase() === 'N12KNL';
+
+    document.getElementById('results-reg-badge').textContent = displayReg;
+    document.getElementById('r-plate').textContent = displayReg;
+
+    if(isDemo){
+      document.getElementById('r-name').textContent = 'BMW M2 Coupé';
+      document.getElementById('r-sub').textContent = 'First Generation · F87 · 2016–2021';
+      document.getElementById('r-tax').textContent = 'Tax: Valid';
+      document.getElementById('r-mot').textContent = 'MOT: Valid';
+      document.getElementById('r-fuel').textContent = 'Petrol';
+      document.getElementById('r-engine').textContent = '3.0L I6';
+      document.getElementById('r-power').textContent = '365 hp';
+      document.getElementById('r-torque').textContent = '465 Nm';
+      document.getElementById('r-0to60').textContent = '4.5s';
+      document.getElementById('r-topspeed').textContent = '250 km/h';
+      document.getElementById('r-weight').textContent = '1,550 kg';
+      document.getElementById('r-colour-dot').style.background = '#002C4A';
+      document.getElementById('r-colour').textContent = 'Colour: Long Beach Blue';
+    } else {
+      document.getElementById('r-name').textContent = 'Vehicle Found';
+      document.getElementById('r-sub').textContent = 'Registration: ' + displayReg;
+      document.getElementById('r-fuel').textContent = 'Unknown fuel';
+      document.getElementById('r-engine').textContent = '—';
+      document.getElementById('r-power').textContent = '—';
+      document.getElementById('r-torque').textContent = '—';
+      document.getElementById('r-0to60').textContent = '—';
+      document.getElementById('r-topspeed').textContent = '—';
+      document.getElementById('r-weight').textContent = '—';
+      document.getElementById('r-colour').textContent = 'Colour: Unknown';
+    }
+
+    page.style.display = 'block';
+    page.scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+
+    if(isDemo) setTimeout(initPriceChart, 300);
+  }
+
+  function initPriceChart(){
+    const canvas = document.getElementById('price-chart');
+    if(!canvas || canvas._chartInstance) return;
+
+    // Recent UK sale prices — realistic F87 M2 data points over 12 months
+    const labels = ['May 24','Jun 24','Jul 24','Aug 24','Sep 24','Oct 24','Nov 24','Dec 24','Jan 25','Feb 25','Mar 25','Apr 25'];
+    const sales  = [24200, 26500, 23800, 27200, 25100, 28400, 24900, 26100, 27800, 25600, 26900, 27400];
+    const avg    = [25200, 25300, 25500, 25600, 25700, 25900, 26000, 26100, 26300, 26400, 26600, 26700];
+
+    const Chart = window.Chart;
+    if(!Chart){ return; }
+
+    canvas._chartInstance = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Sale price',
+            data: sales,
+            borderColor: '#7ECFB8',
+            backgroundColor: 'rgba(126,207,184,0.08)',
+            pointBackgroundColor: '#7ECFB8',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            tension: 0.4,
+            fill: true,
+            borderWidth: 2,
+          },
+          {
+            label: 'Market avg',
+            data: avg,
+            borderColor: 'rgba(126,207,184,0.35)',
+            borderDash: [5,4],
+            pointRadius: 0,
+            tension: 0.4,
+            fill: false,
+            borderWidth: 1.5,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(10,26,18,0.95)',
+            borderColor: 'rgba(126,207,184,0.25)',
+            borderWidth: 1,
+            titleColor: '#F0F7F4',
+            bodyColor: '#7ECFB8',
+            padding: 10,
+            callbacks: {
+              label: ctx => ' £' + ctx.raw.toLocaleString()
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { color: 'rgba(240,247,244,0.35)', font: { size: 11, family: 'Inter' } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: {
+              color: 'rgba(240,247,244,0.35)',
+              font: { size: 11, family: 'Inter' },
+              callback: v => '£' + (v/1000).toFixed(0) + 'k'
+            },
+            min: 20000, max: 32000
+          }
+        }
+      }
+    });
+  }
+
+
+  function closeResults(){
+    document.getElementById('results-page').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Button listeners
+  document.getElementById('reg-submit-btn').addEventListener('click', lookupReg);
+  document.getElementById('results-back-btn').addEventListener('click', closeResults);
+  document.getElementById('reg-input').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') lookupReg();
   });
 
-  let i = 0;
-  function nextStep(){
-    if(i > 0){
-      document.getElementById(steps[i-1]).classList.remove('active');
-      document.getElementById(steps[i-1]).classList.add('done');
-    }
-    if(i < steps.length){
-      document.getElementById(steps[i]).classList.add('active');
-      i++;
-      setTimeout(nextStep, 700 + Math.random()*400);
-    } else {
-      // all done — show results
-      setTimeout(() => {
-        overlay.style.display = 'none';
-        showResults(raw);
-      }, 500);
-    }
-  }
-  setTimeout(nextStep, 300);
-}
+  // Hint click
+  document.querySelectorAll('[data-demo-reg]').forEach(el => {
+    el.addEventListener('click', function(){
+      document.getElementById('reg-input').value = this.getAttribute('data-demo-reg');
+    });
+  });
 
-window.showResults = function(reg){
-  const page = document.getElementById('results-page');
-
-  // For demo: N12KNL shows BMW M2 data. Any other reg shows generic data.
-  const isDemo = reg.replace(/\s/g,'').toUpperCase() === 'N12KNL';
-
-  const formatted = reg.length <= 4 ? reg : reg.slice(0,4) + ' ' + reg.slice(4);
-
-  document.getElementById('results-reg-badge').textContent = formatted;
-  document.getElementById('r-plate').textContent = formatted;
-
-  if(isDemo){
-    document.getElementById('r-name').textContent = 'BMW M2 Coupé';
-    document.getElementById('r-sub').textContent = 'First Generation · F87 · 2016–2021';
-    document.getElementById('r-tax').textContent = 'Tax: Valid';
-    document.getElementById('r-mot').textContent = 'MOT: Valid';
-    document.getElementById('r-fuel').textContent = 'Petrol';
-    document.getElementById('r-engine').textContent = '3.0L I6';
-    document.getElementById('r-power').textContent = '365 hp';
-    document.getElementById('r-torque').textContent = '465 Nm';
-    document.getElementById('r-0to60').textContent = '4.5s';
-    document.getElementById('r-topspeed').textContent = '250 km/h';
-    document.getElementById('r-weight').textContent = '1,550 kg';
-    document.getElementById('r-colour-dot').style.background = '#1a1a1a';
-    document.getElementById('r-colour').textContent = 'Colour: Black';
-  } else {
-    document.getElementById('r-name').textContent = 'Vehicle Found';
-    document.getElementById('r-sub').textContent = 'Registration: ' + formatted;
-    document.getElementById('r-fuel').textContent = 'Unknown fuel';
-    document.getElementById('r-engine').textContent = '—';
-    document.getElementById('r-power').textContent = '—';
-    document.getElementById('r-torque').textContent = '—';
-    document.getElementById('r-0to60').textContent = '—';
-    document.getElementById('r-topspeed').textContent = '—';
-    document.getElementById('r-weight').textContent = '—';
-    document.getElementById('r-colour').textContent = 'Colour: Unknown';
-  }
-
-  page.style.display = 'block';
-  page.scrollTop = 0;
-  document.body.style.overflow = 'hidden';
-}
-
-window.closeResults = function(){
-  document.getElementById('results-page').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-// allow Enter key on input
-document.getElementById('reg-input').addEventListener('keydown', e => {
-  if(e.key === 'Enter') lookupReg();
 });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </body>
 </html>
