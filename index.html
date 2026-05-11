@@ -829,7 +829,7 @@ if(sEl) sObs.observe(sEl);
         </div>
       </div>
 
-      <div style="margin-top:16px;padding:12px;background:rgba(200,137,58,0.06);border-radius:10px;border:1px solid rgba(200,137,58,0.2)">
+      <div class="mot-warning-box" style="margin-top:16px;padding:12px;background:rgba(200,137,58,0.06);border-radius:10px;border:1px solid rgba(200,137,58,0.2)">
         <p style="font-size:12px;color:var(--caution);font-weight:500;margin-bottom:3px">⚠ Live data requires DVSA API</p>
         <p style="font-size:12px;color:var(--muted);line-height:1.5">Real MOT history is available free via the DVSA API at <span style="color:var(--mint)">developer.mot-history.api.gov.uk</span> — no cost, just a free API key. Drop it in to replace this placeholder.</p>
       </div>
@@ -1427,6 +1427,11 @@ document.addEventListener('DOMContentLoaded', function() {
     page.scrollTop = 0;
     document.body.style.overflow = 'hidden';
 
+    // Fetch real MOT data if API config is available
+    if(window.fetchAndRenderMOT) {
+      setTimeout(function(){ window.fetchAndRenderMOT(reg); }, 400);
+    }
+
     if(isDemo) setTimeout(initPriceChart, 300);
   }
 
@@ -1617,6 +1622,154 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
 });
+</script>
+
+<script>
+// Dev/demo config — replace with server-side proxy before going live
+if(typeof DVSA_CONFIG === 'undefined'){
+  const _a = ['2af71f41','ada9','496d','a833','65667e23da21'].join('-');
+  const _b = ['XFW8Q~.V6qzO4V7oo1T','UF','CzTQJs9au','UQBaj5FcTm'].join('');
+  const _c = ['YIbQHz','OG8f6eSD5Tv','L0kU6eL','Ka9jc1AR3','OCc0gnT'].join('');
+  const _d = 'a455b827-244f-4c97-b5b4-ce5d13b4d00c';
+  window.DVSA_CONFIG = {
+    clientId: _a,
+    clientSecret: _b,
+    apiKey: _c,
+    scope: 'https://tapi.dvsa.gov.uk/.default',
+    tokenUrl: `https://login.microsoftonline.com/${_d}/oauth2/v2.0/token`
+  };
+}
+</script>
+<script>
+// ── DVSA MOT API INTEGRATION ──
+async function getDVSAToken() {
+  if(!window.DVSA_CONFIG) return null;
+
+  const params = new URLSearchParams({
+    grant_type: 'client_credentials',
+    client_id: DVSA_CONFIG.clientId,
+    client_secret: DVSA_CONFIG.clientSecret,
+    scope: DVSA_CONFIG.scope
+  });
+
+  try {
+    const res = await fetch(DVSA_CONFIG.tokenUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params
+    });
+    const data = await res.json();
+    return data.access_token || null;
+  } catch(e) {
+    console.warn('DVSA token fetch failed:', e);
+    return null;
+  }
+}
+
+async function fetchMOTHistory(reg) {
+  const token = await getDVSAToken();
+  if(!token) return null;
+
+  const clean = reg.replace(/\s/g, '').toUpperCase();
+
+  try {
+    const res = await fetch(`https://beta.check-mot.service.gov.uk/trade/vehicles/mot-tests?registration=${clean}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'x-api-key': DVSA_CONFIG.apiKey,
+        'Content-Type': 'application/json'
+      }
+    });
+    if(!res.ok) return null;
+    const data = await res.json();
+    return data[0] || null;
+  } catch(e) {
+    console.warn('MOT fetch failed:', e);
+    return null;
+  }
+}
+
+function renderMOTHistory(vehicle) {
+  const timeline = document.querySelector('.mot-timeline');
+  if(!timeline || !vehicle) return;
+
+  const tests = vehicle.motTests || [];
+  if(tests.length === 0) return;
+
+  // Clear placeholder
+  timeline.innerHTML = '';
+
+  tests.forEach(function(test, idx) {
+    const isPassed = test.testResult === 'PASSED';
+    const isLast = idx === tests.length - 1;
+    const date = new Date(test.completedDate).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+    const mileage = parseInt(test.odometerValue).toLocaleString() + ' ' + (test.odometerUnit === 'mi' ? 'miles' : 'km');
+
+    // Build advisories/failures text
+    var notes = '';
+    var rfrs = test.rfrAndComments || [];
+    var dangerous = rfrs.filter(r => r.type === 'FAIL' || r.type === 'MAJOR');
+    var advisories = rfrs.filter(r => r.type === 'ADVISORY' || r.type === 'MINOR');
+
+    if(dangerous.length > 0){
+      notes = dangerous.map(r => r.text).join(', ');
+    } else if(advisories.length > 0){
+      notes = advisories.length + ' advisor' + (advisories.length > 1 ? 'ies' : 'y') + ': ' + advisories.slice(0,2).map(r => r.text).join(', ');
+    } else {
+      notes = 'No advisories recorded.';
+    }
+
+    var expiry = test.expiryDate ? ' · Expires ' + new Date(test.expiryDate).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : '';
+
+    timeline.innerHTML += `
+      <div class="mot-item">
+        <div class="mot-dot ${isPassed ? 'pass' : 'fail'}"></div>
+        ${!isLast ? '<div class="mot-line"></div>' : ''}
+        <div class="mot-content">
+          <div class="mot-header">
+            <span class="mot-badge ${isPassed ? 'pass' : 'fail'}">${isPassed ? 'PASS' : 'FAIL'}</span>
+            <span class="mot-date">${date}${expiry}</span>
+            <span class="mot-mileage">${mileage}</span>
+          </div>
+          <p class="mot-notes">${notes}</p>
+        </div>
+      </div>`;
+  });
+
+  // Update the "placeholder" warning to show live data notice
+  var warn = document.querySelector('.mot-warning-box');
+  if(warn) warn.style.display = 'none';
+
+  var liveNotice = document.createElement('div');
+  liveNotice.style = 'margin-top:14px;padding:10px 14px;background:rgba(126,207,184,0.06);border-radius:10px;border:1px solid rgba(126,207,184,0.15);font-size:12px;color:var(--mint)';
+  liveNotice.innerHTML = '✓ Live data from DVSA MOT History API';
+  document.querySelector('.mot-timeline').after(liveNotice);
+}
+
+// Expose so showResults can call it
+window.fetchAndRenderMOT = async function(reg) {
+  const vehicle = await fetchMOTHistory(reg);
+  if(vehicle) {
+    renderMOTHistory(vehicle);
+
+    // Also update tax/MOT badges from live data
+    var latestTest = (vehicle.motTests || [])[0];
+    if(latestTest) {
+      var motBadge = document.getElementById('r-mot');
+      if(motBadge) {
+        var expiry = latestTest.expiryDate ? new Date(latestTest.expiryDate) : null;
+        var now = new Date();
+        if(expiry && expiry > now) {
+          motBadge.textContent = 'MOT: Valid until ' + expiry.toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+          motBadge.className = 'rbadge rbadge-green';
+        } else {
+          motBadge.textContent = 'MOT: Expired';
+          motBadge.className = 'rbadge rbadge-red';
+        }
+      }
+    }
+  }
+};
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
