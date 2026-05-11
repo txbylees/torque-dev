@@ -1659,30 +1659,30 @@ function renderMOTHistory(vehicle) {
   const tests = vehicle.motTests || [];
   if(tests.length === 0) return;
 
-  // Clear placeholder
   timeline.innerHTML = '';
 
   tests.forEach(function(test, idx) {
     const isPassed = test.testResult === 'PASSED';
     const isLast = idx === tests.length - 1;
-    const date = new Date(test.completedDate).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
-    const mileage = parseInt(test.odometerValue).toLocaleString() + ' ' + (test.odometerUnit === 'mi' ? 'miles' : 'km');
+    const date = new Date(test.completedDate).toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+    const mileage = parseInt(test.odometerValue).toLocaleString() + ' ' + (test.odometerUnit === 'MI' ? 'miles' : 'km');
 
-    // Build advisories/failures text
+    const defects = test.defects || [];
+    const failures = defects.filter(d => d.type === 'FAIL' || d.type === 'MAJOR' || d.dangerous === true);
+    const advisories = defects.filter(d => d.type === 'ADVISORY' || d.type === 'MINOR' || d.type === 'USER_ENTERED');
+
     var notes = '';
-    var rfrs = test.rfrAndComments || [];
-    var dangerous = rfrs.filter(r => r.type === 'FAIL' || r.type === 'MAJOR');
-    var advisories = rfrs.filter(r => r.type === 'ADVISORY' || r.type === 'MINOR');
-
-    if(dangerous.length > 0){
-      notes = dangerous.map(r => r.text).join(', ');
+    if(failures.length > 0){
+      notes = 'Failed: ' + failures.slice(0,2).map(d => d.text).join('; ');
     } else if(advisories.length > 0){
-      notes = advisories.length + ' advisor' + (advisories.length > 1 ? 'ies' : 'y') + ': ' + advisories.slice(0,2).map(r => r.text).join(', ');
+      notes = advisories.length + ' advisor' + (advisories.length > 1 ? 'ies' : 'y') + ': ' + advisories.slice(0,2).map(d => d.text).join('; ');
     } else {
-      notes = 'No advisories recorded.';
+      notes = 'No defects or advisories recorded.';
     }
 
-    var expiry = test.expiryDate ? ' · Expires ' + new Date(test.expiryDate).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) : '';
+    const expiry = test.expiryDate
+      ? ' · Expires ' + new Date(test.expiryDate).toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'})
+      : '';
 
     timeline.innerHTML += `
       <div class="mot-item">
@@ -1699,40 +1699,72 @@ function renderMOTHistory(vehicle) {
       </div>`;
   });
 
-  // Update the "placeholder" warning to show live data notice
+  // Hide placeholder warning, show live badge
   var warn = document.querySelector('.mot-warning-box');
   if(warn) warn.style.display = 'none';
 
-  var liveNotice = document.createElement('div');
-  liveNotice.style = 'margin-top:14px;padding:10px 14px;background:rgba(126,207,184,0.06);border-radius:10px;border:1px solid rgba(126,207,184,0.15);font-size:12px;color:var(--mint)';
-  liveNotice.innerHTML = '✓ Live data from DVSA MOT History API';
-  document.querySelector('.mot-timeline').after(liveNotice);
+  var existing = document.getElementById('mot-live-notice');
+  if(!existing){
+    var liveNotice = document.createElement('div');
+    liveNotice.id = 'mot-live-notice';
+    liveNotice.style = 'margin-top:14px;padding:10px 14px;background:rgba(126,207,184,0.06);border-radius:10px;border:1px solid rgba(126,207,184,0.15);font-size:12px;color:var(--mint)';
+    liveNotice.innerHTML = '✓ Live data from DVSA MOT History API';
+    timeline.after(liveNotice);
+  }
 }
 
-// Expose so showResults can call it
 window.fetchAndRenderMOT = async function(reg) {
   console.log('Fetching MOT for:', reg);
   const vehicle = await fetchMOTHistory(reg);
   console.log('MOT API response:', vehicle);
-  if(vehicle) {
-    renderMOTHistory(vehicle);
-    var latestTest = (vehicle.motTests || [])[0];
-    if(latestTest) {
-      var motBadge = document.getElementById('r-mot');
-      if(motBadge) {
-        var expiry = latestTest.expiryDate ? new Date(latestTest.expiryDate) : null;
-        var now = new Date();
-        if(expiry && expiry > now) {
-          motBadge.textContent = 'MOT: Valid until ' + expiry.toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+
+  if(vehicle && vehicle.motTests) {
+    // Update vehicle details from live data
+    if(vehicle.make)  document.getElementById('r-name').textContent = vehicle.make + ' ' + vehicle.model;
+    if(vehicle.fuelType) document.getElementById('r-fuel').textContent = vehicle.fuelType;
+    if(vehicle.primaryColour){
+      const colourMap = {
+        'BLUE': '#002C4A', 'BLACK': '#1a1a1a', 'WHITE': '#f5f5f5',
+        'RED': '#8B0000', 'SILVER': '#A8A9AD', 'GREY': '#6B6B6B',
+        'GREEN': '#1a4a1a', 'ORANGE': '#CC5500', 'YELLOW': '#FFD700'
+      };
+      const col = vehicle.primaryColour.toUpperCase();
+      const dot = document.getElementById('r-colour-dot');
+      if(dot) dot.style.background = colourMap[col] || '#555';
+      const colLabel = document.getElementById('r-colour');
+      if(colLabel) colLabel.textContent = 'Colour: ' + vehicle.primaryColour.charAt(0) + vehicle.primaryColour.slice(1).toLowerCase();
+    }
+
+    // Update MOT badge from live expiry
+    const latestTest = vehicle.motTests[0];
+    if(latestTest && latestTest.expiryDate){
+      const expiry = new Date(latestTest.expiryDate);
+      const now = new Date();
+      const motBadge = document.getElementById('r-mot');
+      if(motBadge){
+        if(expiry > now){
+          motBadge.textContent = 'MOT: Valid until ' + expiry.toLocaleDateString('en-GB', {month:'short', year:'numeric'});
           motBadge.className = 'rbadge rbadge-green';
         } else {
           motBadge.textContent = 'MOT: Expired';
-          motBadge.className = 'rbadge rbadge-red';
+          motBadge.className = 'rbadge';
+          motBadge.style.color = '#e06060';
         }
       }
     }
+
+    // Update mileage in stats
+    const latestMileage = vehicle.motTests[0].odometerValue;
+    if(latestMileage){
+      const weightEl = document.getElementById('r-weight');
+      // repurpose or add mileage display — update sub heading
+      const sub = document.getElementById('r-sub');
+      if(sub) sub.textContent = sub.textContent + ' · ' + parseInt(latestMileage).toLocaleString() + ' miles';
+    }
+
+    renderMOTHistory(vehicle);
   } else {
-    console.warn('No MOT data returned — check CORS or API response above');
+    console.warn('No MOT data returned');
   }
 };
 </script>
