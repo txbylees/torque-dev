@@ -1625,64 +1625,27 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
-// Dev/demo config — replace with server-side proxy before going live
-if(typeof DVSA_CONFIG === 'undefined'){
-  const _a = ['2af71f41','ada9','496d','a833','65667e23da21'].join('-');
-  const _b = ['XFW8Q~.V6qzO4V7oo1T','UF','CzTQJs9au','UQBaj5FcTm'].join('');
-  const _c = ['YIbQHz','OG8f6eSD5Tv','L0kU6eL','Ka9jc1AR3','OCc0gnT'].join('');
-  const _d = 'a455b827-244f-4c97-b5b4-ce5d13b4d00c';
-  window.DVSA_CONFIG = {
-    clientId: _a,
-    clientSecret: _b,
-    apiKey: _c,
-    scope: 'https://tapi.dvsa.gov.uk/.default',
-    tokenUrl: `https://login.microsoftonline.com/${_d}/oauth2/v2.0/token`
-  };
-}
+// MOT API config — calls Cloudflare Worker proxy (keys stored server-side)
+window.DVSA_CONFIG = {
+  workerUrl: 'https://torque-mot.workers.dev' // update with your worker URL once deployed
+};
 </script>
 <script>
-// ── DVSA MOT API INTEGRATION ──
-async function getDVSAToken() {
-  if(!window.DVSA_CONFIG) return null;
-
-  const params = new URLSearchParams({
-    grant_type: 'client_credentials',
-    client_id: DVSA_CONFIG.clientId,
-    client_secret: DVSA_CONFIG.clientSecret,
-    scope: DVSA_CONFIG.scope
-  });
-
-  try {
-    const res = await fetch(DVSA_CONFIG.tokenUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params
-    });
-    const data = await res.json();
-    return data.access_token || null;
-  } catch(e) {
-    console.warn('DVSA token fetch failed:', e);
-    return null;
-  }
-}
-
+// ── DVSA MOT API INTEGRATION (via Cloudflare Worker proxy) ──
 async function fetchMOTHistory(reg) {
-  const token = await getDVSAToken();
-  if(!token) return null;
+  if(!window.DVSA_CONFIG || !DVSA_CONFIG.workerUrl) return null;
 
   const clean = reg.replace(/\s/g, '').toUpperCase();
 
   try {
-    const res = await fetch(`https://beta.check-mot.service.gov.uk/trade/vehicles/mot-tests?registration=${clean}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'x-api-key': DVSA_CONFIG.apiKey,
-        'Content-Type': 'application/json'
-      }
-    });
-    if(!res.ok) return null;
+    const res = await fetch(`${DVSA_CONFIG.workerUrl}/mot?reg=${clean}`);
+    if(!res.ok) {
+      console.warn('Worker returned:', res.status);
+      return null;
+    }
     const data = await res.json();
-    return data[0] || null;
+    console.log('MOT data received:', data);
+    return data;
   } catch(e) {
     console.warn('MOT fetch failed:', e);
     return null;
@@ -1748,11 +1711,11 @@ function renderMOTHistory(vehicle) {
 
 // Expose so showResults can call it
 window.fetchAndRenderMOT = async function(reg) {
+  console.log('Fetching MOT for:', reg);
   const vehicle = await fetchMOTHistory(reg);
+  console.log('MOT API response:', vehicle);
   if(vehicle) {
     renderMOTHistory(vehicle);
-
-    // Also update tax/MOT badges from live data
     var latestTest = (vehicle.motTests || [])[0];
     if(latestTest) {
       var motBadge = document.getElementById('r-mot');
@@ -1768,6 +1731,8 @@ window.fetchAndRenderMOT = async function(reg) {
         }
       }
     }
+  } else {
+    console.warn('No MOT data returned — check CORS or API response above');
   }
 };
 </script>
